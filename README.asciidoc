@@ -18,7 +18,7 @@ The check script supports following options. Details about monitoring different 
 
 [source,python]
 ----
-server:nagios-plugin-jbossas7 Aparna$ python check_jbossas7.py --help
+$ python ./check_jbossas7.py --help
 Usage: check_jbossas7.py [options]
 
 This Nagios plugin checks the health of JBossAS.
@@ -49,6 +49,9 @@ Options:
                         The datasource pool statistics type
   -t THREAD_STAT_TYPE, --threadstats=THREAD_STAT_TYPE
                         The threading statistics type
+  --jvmhost=JVM_HOST    The host running the JVM in domain mode
+  --jvmas=JVM_SERVER    Name of the application server when running in domain
+                        mode
 ----
 
 Currently the plugin supports monitoring of following resources and sub-systems.
