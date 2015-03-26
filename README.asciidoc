@@ -62,6 +62,7 @@ link:gc.asciidoc[Garbage Collection] :: Checks garbage collection rate
 link:messaging.asciidoc[HornetQ Messaging] :: Checks message queue depths
 link:datasource.asciidoc[DataSource Pool Usage] :: Checks datasource pool utilization
 link:threading.asciidoc[Threading] :: Checks JVM process thread utilization
+link:domainmode.asciidoc[Domain Mode] :: Using JBoss domain mode
 
 
 === Licensing and Copyright: ===

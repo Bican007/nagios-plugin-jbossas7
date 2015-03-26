@@ -1,0 +1,24 @@
+== Using Domain mode ==
+
+When using jboss in _domain_ mode you have to specify the `--jvmhost` and `--jvmas` parameters to 
+qualify which machine and which instance of application server to query.
+
+So you have to modify the nagios configuration samples (thought for _standalone_ mode) provided in other sections adding the additional parameters.
+
+=== Server status for domain mode: ===
+
+In commands.cfg and add the following:
+
+ define command {
+    command_name    check_jboss
+    command_line    $USER1$/nagios-plugin-jbossas7/check_jbossas7.py -H $HOSTADDRESS$ -A $ARG1$ -P $ARG2$ -u $ARG3$ -p $ARG4$ -W $ARG5$ -C $ARG6$ --jvmhost $ARG7$ --jvmas $ARG8$
+ }
+
+To monitor AS `server-one` on server `master` define the service this way:
+
+ define service {
+    use                     generic-service
+    hostgroup_name          JBossAS Servers
+    service_description     JBossAS Server Connectivity Check
+    check_command           check_jboss!server_status!9990!admin!password123!master!server-one
+ }

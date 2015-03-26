@@ -9,6 +9,11 @@
 # Main Author
 #   - Aparna Chaudhary <aparna.chaudhary@gmail.com>
 # Version: 0.2
+# Github URL: https://github.com/aparnachaudhary/nagios-plugin-jbossas7
+#
+# Patched for domain mode by:
+#    - Andrea Paolini <ap@nuxi.it>
+# Github URL: https://github.com/apaolini/nagios-plugin-jbossas7
 #
 # USAGE
 #
