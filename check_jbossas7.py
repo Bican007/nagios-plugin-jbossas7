@@ -121,7 +121,7 @@ def check_levels(param, warning, critical, message, ok=[]):
             sys.exit(0)
 
         # unexpected param value
-        print "CRITICAL - Unexpected value : %d" % param + "; " + message
+        print "CRITICAL - Unexpected value : " + str(param) + "; " + message
         return 2
 
 
@@ -310,7 +310,7 @@ def exit_with_general_critical(e):
 
 
 def check_server_status(conninfo, warning, critical, perf_data):
-    warning = warning or "reload-required"
+    warning = warning or ["reload-required", "restart-required"]
     critical = critical or ""
     ok = "running"
     
