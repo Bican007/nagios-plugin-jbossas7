@@ -96,6 +96,8 @@ def check_levels(param, warning, critical, message, ok=[]):
     :param ok: watermark for ok level
     """
     if (numeric_type(critical) and numeric_type(warning)):
+        if not numeric_type(param):
+            param = float(param)
         if param >= critical:
             print "CRITICAL - " + message
             sys.exit(2)
