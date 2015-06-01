@@ -13,3 +13,5 @@
 ../check_jbossas7.py -H 127.0.0.1 -A datasource -P 9990 -u jboss -p 00-testpwd -d ExampleDS -s ActiveCount
 #../check_jbossas7.py -H 127.0.0.1 -A xa_datasource -P 9990 -u jboss -p 00-testpwd -d ExampleDS -s ActiveCount
 ../check_jbossas7.py -H 127.0.0.1 -A threading -P 9990 -u jboss -p 00-testpwd -t thread-count
+../check_jbossas7.py -H 127.0.0.1 -A ejbthreadqueue -P 9990 -u jboss -p 00-testpwd
+../check_jbossas7.py -H 127.0.0.1 -A ejbthreadusage -P 9990 -u jboss -p 00-testpwd

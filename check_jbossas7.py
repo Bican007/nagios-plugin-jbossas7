@@ -220,7 +220,7 @@ def main(argv):
     p.add_option('-A', '--action', action='store', type='choice', dest='action', default='server_status', help='The action you want to take',
                  choices=['server_status', 'heap_usage', 'non_heap_usage', 'eden_space_usage',
                           'old_gen_usage', 'perm_gen_usage', 'code_cache_usage', 'gctime',
-                          'queue_depth', 'datasource', 'xa_datasource', 'threading'])
+                          'queue_depth', 'datasource', 'xa_datasource', 'threading', 'ejbthreadqueue', 'ejbthreadusage'])
     p.add_option('-D', '--perf-data', action='store_true', dest='perf_data', default=False, help='Enable output of Nagios performance data')
     p.add_option('-m', '--memorypool', action='store', dest='memory_pool', default=None, help='The memory pool type')
     p.add_option('-q', '--queuename', action='store', dest='queue_name', default=None, help='The queue name for which you want to retrieve queue depth')
@@ -279,6 +279,10 @@ def main(argv):
         return check_xa_datasource(conninfo, datasource_name, ds_stat_type, warning, critical, perf_data)
     elif action == "threading":
         return check_threading(conninfo, thread_stat_type, warning, critical, perf_data)
+    elif action == "ejbthreadqueue":
+        return check_ejb_threadpool_queue(conninfo, warning, critical, perf_data)
+    elif action == "ejbthreadusage":
+        return check_ejb_threadpool_usage(conninfo, warning, critical, perf_data)
     else:
         return 2
 
@@ -312,7 +316,10 @@ def exit_with_general_critical(e):
 def get_ejb_threadpool_data(conninfo, thread_pool_value):
 
     try:
-        payload = {"operation":"read-resource", "include-runtime":"true", "address":[{"subsystem":"ejb3"},{"thread-pool":"default"}], "json.pretty":1}
+        if conninfo['jvm_host'] is None:
+          payload = {"operation":"read-resource", "include-runtime":"true", "address":[{"subsystem":"ejb3"},{"thread-pool":"default"}], "json.pretty":1}
+        else:
+          payload = {"operation":"read-resource", "include-runtime":"true", "address":[{"host":conninfo['jvm_host']},{"server":conninfo['jvm_server']},{"subsystem":"ejb3"},{"thread-pool":"default"}], "json.pretty":1}
         res = post_digest_auth_json(conninfo, "", payload)
         res = res['result']
         
