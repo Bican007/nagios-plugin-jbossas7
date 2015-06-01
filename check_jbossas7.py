@@ -309,6 +309,52 @@ def exit_with_general_critical(e):
     return 2
 
 
+def get_ejb_threadpool_data(conninfo, thread_pool_value):
+
+    try:
+        payload = {"operation":"read-resource", "include-runtime":"true", "address":[{"subsystem":"ejb3"},{"thread-pool":"default"}], "json.pretty":1}
+        res = post_digest_auth_json(conninfo, "", payload)
+        res = res['result']
+        
+        data = res[thread_pool_value]
+    
+        return data
+    except Exception, e:
+        return exit_with_general_critical(e)
+
+def check_ejb_threadpool_queue(conninfo, warning, critical, perf_data):
+    warning = warning or 1
+    critical = critical or 5
+    
+    try:
+        queue_length = get_ejb_threadpool_data(conninfo, "queue-size")
+
+        message = "EJB queue length: %s" % (queue_length)
+        message += performance_data(perf_data, [(queue_length, "ejb_threadpool_queue", warning, critical)])
+    
+        return check_levels(queue_length, warning, critical, message)
+    except Exception, e:
+        return exit_with_general_critical(e)
+
+
+def check_ejb_threadpool_usage(conninfo, warning, critical, perf_data):
+    warning = warning or 80
+    critical = critical or 90
+    
+    try:
+        active_count = get_ejb_threadpool_data(conninfo, "active-count")
+        max_count = get_ejb_threadpool_data(conninfo, "max-threads")
+        percent = round((float(active_count * 100) / max_count), 2)
+
+
+        message = "EJB threads: %s active of %s" % (active_count, max_count)
+        message += performance_data(perf_data, [(active_count, "ejb_threadpool_usage", warning, critical)])
+    
+        return check_levels(percent, warning, critical, message)
+    except Exception, e:
+        return exit_with_general_critical(e)
+
+
 def check_server_status(conninfo, warning, critical, perf_data):
     warning = warning or ["reload-required", "restart-required"]
     critical = critical or ""
