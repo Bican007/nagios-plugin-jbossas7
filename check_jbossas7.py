@@ -135,12 +135,17 @@ def get_digest_auth_json(conninfo, uri, payload):
     :param payload: JSON payload 
     """
     try:
+        proxies = {
+           "http": None, 
+           "https": None,
+        }
+        
         if conninfo['jvm_host'] is None:
             srvuri = ""
         else:
             srvuri = "/host/" + conninfo['jvm_host'] + "/server/" + conninfo['jvm_server']
         url = base_url(conninfo['host'], conninfo['port']) + srvuri+ uri
-        res = requests.get(url, params=payload, auth=HTTPDigestAuth(conninfo['user'], conninfo['password']))
+        res = requests.get(url, proxies=proxies, params=payload, auth=HTTPDigestAuth(conninfo['user'], conninfo['password']))
         data = res.json()
         
         try:    
@@ -167,13 +172,18 @@ def post_digest_auth_json(conninfo, uri, payload):
     :param payload: JSON payload 
     """
     try:
+        proxies = {
+           "http": None, 
+           "https": None,
+        }
+        
         if conninfo['jvm_host'] is None:
             srvuri = ""
         else:
             srvuri = "/host/" + conninfo['jvm_host'] + "/server/" + conninfo['jvm_server']
         url = base_url(conninfo['host'], conninfo['port']) + srvuri + uri
         headers = {'content-type': 'application/json'}        
-        res = requests.post(url, data=json.dumps(payload), headers=headers, auth=HTTPDigestAuth(conninfo['user'], conninfo['password']))
+        res = requests.post(url, proxies=proxies, data=json.dumps(payload), headers=headers, auth=HTTPDigestAuth(conninfo['user'], conninfo['password']))
         data = res.json()
         
         try:    
