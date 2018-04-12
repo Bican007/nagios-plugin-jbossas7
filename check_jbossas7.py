@@ -230,7 +230,7 @@ def main(argv):
     p.add_option('-A', '--action', action='store', type='choice', dest='action', default='server_status', help='The action you want to take',
                  choices=['server_status', 'heap_usage', 'non_heap_usage', 'eden_space_usage',
                           'old_gen_usage', 'perm_gen_usage', 'code_cache_usage', 'gctime',
-                          'queue_depth', 'datasource', 'xa_datasource', 'threading', 'ejbthreadqueue', 'ejbthreadusage'])
+                          'queue_depth', 'datasource', 'xa_datasource', 'threading', 'ejbthreadqueue', 'ejbthreadusage', 'http_requests'])
     p.add_option('-D', '--perf-data', action='store_true', dest='perf_data', default=False, help='Enable output of Nagios performance data')
     p.add_option('-m', '--memorypool', action='store', dest='memory_pool', default=None, help='The memory pool type')
     p.add_option('-q', '--queuename', action='store', dest='queue_name', default=None, help='The queue name for which you want to retrieve queue depth')
@@ -293,6 +293,8 @@ def main(argv):
         return check_ejb_threadpool_queue(conninfo, warning, critical, perf_data)
     elif action == "ejbthreadusage":
         return check_ejb_threadpool_usage(conninfo, warning, critical, perf_data)
+    elif action == "http_requests":
+        return get_http_request_counts(conninfo, warning, critical, perf_data)
     else:
         return 2
 
@@ -588,6 +590,28 @@ def check_queue_depth(conninfo, queue_name, warning, critical, perf_data):
         message += performance_data(perf_data, [(queue_depth, "queue_depth", warning, critical)])
     
         return check_levels(queue_depth, warning, critical, message)
+    except Exception, e:
+        return exit_with_general_critical(e)
+
+
+def get_http_request_counts(conninfo, warning, critical, perf_data):
+    warning = warning or 0
+    critical = critical or 0
+
+    try:
+        payload = {'include-runtime': 'true', 'recursive': 'true'}
+        url = "/subsystem/web/connector/http/"
+
+        data = get_digest_auth_json(conninfo, url, payload)
+        requestCount = data['requestCount']
+        errorCount = data['errorCount']
+
+        message = "Number of requests from server start %s" % (requestCount)
+        message += performance_data(perf_data, [(requestCount, "requestCount")])
+
+        print "OK - " + message
+        sys.exit(0)
+
     except Exception, e:
         return exit_with_general_critical(e)
 
